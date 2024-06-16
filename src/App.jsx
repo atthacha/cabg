@@ -1,33 +1,44 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [time, setTime] = useState(300);
+
+  useEffect(() => {
+    let timer = setInterval(() => {
+      setTime((time) => {
+        if (time === 0) {
+          clearInterval(timer);
+          return 0;
+        } else return time - 1;
+      });
+    }, 1000);
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="grid grid-flow-col gap-5 text-center auto-cols-max">
+        <div className="flex flex-col">
+          <span className="countdown font-mono text-5xl">
+            <span style={{ "--value": '00' }}></span>
+          </span>
+          hours
+        </div>
+        <div className="flex flex-col">
+          <span className="countdown font-mono text-5xl">
+            <span style={{ "--value": `${Math.floor(time / 60)}`.padStart(2, 0) }}></span>
+          </span>
+          min
+        </div>
+        <div className="flex flex-col">
+          <span className="countdown font-mono text-5xl">
+            <span style={{ "--value": `${time % 60}`.padStart(2, 0) }}></span>
+          </span>
+          sec
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
