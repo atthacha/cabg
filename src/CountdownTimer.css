@@ -3,91 +3,94 @@
     flex-direction: column;
     align-items: center;
     margin-top: 50px;
-  }
-  
-  .input-field {
+}
+
+.input-field {
     padding: 8px 12px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
     margin-bottom: 20px;
-  }
-  
-  .button-container {
+}
+
+.button-container {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
-  }
-  
-  .button {
+}
+
+.button {
     padding: 10px 20px;
     font-size: 16px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .start-button {
+}
+
+.start-button {
     background-color: #4caf50;
     color: white;
-  }
-  
-  .start-button:not(:disabled):hover {
+}
+
+.start-button:not(:disabled):hover {
     background-color: #45a049;
-  }
-  
-  .stop-button {
+}
+
+.stop-button {
     background-color: #f44336;
     color: white;
-  }
-  
-  .stop-button:not(:disabled):hover {
+}
+
+.stop-button:not(:disabled):hover {
     background-color: #e53935;
-  }
-  
-  .resume-button {
+}
+
+.resume-button {
     background-color: #2196f3;
     color: white;
-  }
-  
-  .resume-button:not(:disabled):hover {
+}
+
+.resume-button:not(:disabled):hover {
     background-color: #1976d2;
-  }
-  
-  .button:disabled {
+}
+
+.button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-  }
-  
-  .countdown-display {
+}
+
+.countdown-display {
     font-size: 24px;
     font-weight: bold;
-  }
+}
 
-  .reset-button {
+.reset-button {
     background-color: #60bfd4;
     color: white;
-  }
+}
 
-  .print-button {
+.print-button {
     background-color: #8160d4;
     color: white;
-  }
-  table {
+}
+
+table {
     border-collapse: collapse;
     width: 100%;
-  }
-  th, td {
+}
+
+th,
+td {
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
-  }
+}
 
-  
 
-  .countdown-display {
+
+.countdown-display {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -97,57 +100,57 @@
     margin: 20px 0;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
-  }
-  
-  .time-section {
+}
+
+.time-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 0 10px;
-  }
-  
-  .time-value {
+}
+
+.time-value {
     font-size: 48px;
     font-weight: bold;
     color: #333;
-  }
-  
-  .time-label {
+}
+
+.time-label {
     font-size: 14px;
     text-transform: uppercase;
     color: #666;
     margin-top: 5px;
-  }
-  
-  .time-separator {
+}
+
+.time-separator {
     font-size: 48px;
     font-weight: bold;
     color: #333;
     margin: 0 5px;
-  }
+}
 
 
-  .countdown-container {
+.countdown-container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-  }
-  
-  .input-field {
+}
+
+.input-field {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     font-size: 16px;
-  }
-  
-  .button-container {
+}
+
+.button-container {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-  }
-  
-  .button {
+}
+
+.button {
     flex: 1 1 calc(33.333% - 10px);
     padding: 10px;
     font-size: 16px;
@@ -155,40 +158,74 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-  }
-  
-  .start-button { background-color: #4CAF50; color: white; }
-  .stop-button { background-color: #f44336; color: white; }
-  .resume-button { background-color: #2196F3; color: white; }
-  .reset-button { background-color: #FF9800; color: white; }
-  .print-button { background-color: #9C27B0; color: white; }
-  
-  .button:hover { opacity: 0.8; }
-  .button:disabled { opacity: 0.5; cursor: not-allowed; }
-  
-  @media (max-width: 600px) {
+}
+
+.start-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.stop-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.resume-button {
+    background-color: #2196F3;
+    color: white;
+}
+
+.reset-button {
+    background-color: #FF9800;
+    color: white;
+}
+
+.print-button {
+    background-color: #9C27B0;
+    color: white;
+}
+
+.button:hover {
+    opacity: 0.8;
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
     .button-container {
-      flex-direction: column;
+        flex-direction: column;
     }
-  
+
     .button {
-      flex: 1 1 100%;
-      margin-bottom: 10px;
+        flex: 1 1 100%;
+        margin-bottom: 10px;
+        width: 20rem;
+
     }
-  }
+}
 
-  .add-minute-button { background-color: #00BCD4; color: white; }
+.add-minute-button {
+    background-color: #00BCD4;
+    color: white;
+}
 
 
-  @keyframes flash {
-    0%, 100% {
-      background-color: #f0f0f0;
+@keyframes flash {
+
+    0%,
+    100% {
+        background-color: #f0f0f0;
     }
+
     50% {
-      background-color: #ff9999; /* สีแดงอ่อน */
+        background-color: #ff9999;
+        /* สีแดงอ่อน */
     }
-  }
+}
 
-  .countdown-display.flashing {
+.countdown-display.flashing {
     animation: flash 1s linear infinite;
-  }
+}
