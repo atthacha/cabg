@@ -124,3 +124,54 @@
     color: #333;
     margin: 0 5px;
   }
+
+
+  .countdown-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .button {
+    flex: 1 1 calc(33.333% - 10px);
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .start-button { background-color: #4CAF50; color: white; }
+  .stop-button { background-color: #f44336; color: white; }
+  .resume-button { background-color: #2196F3; color: white; }
+  .reset-button { background-color: #FF9800; color: white; }
+  .print-button { background-color: #9C27B0; color: white; }
+  
+  .button:hover { opacity: 0.8; }
+  .button:disabled { opacity: 0.5; cursor: not-allowed; }
+  
+  @media (max-width: 600px) {
+    .button-container {
+      flex-direction: column;
+    }
+  
+    .button {
+      flex: 1 1 100%;
+      margin-bottom: 10px;
+    }
+  }
