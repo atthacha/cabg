@@ -1,144 +1,221 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './CountdownTimer.css';
 
-const CountdownTimer = () => {
-  const [seconds, setSeconds] = useState('');
-  const [countdown, setCountdown] = useState(0);
-  const [remainingTime, setRemainingTime] = useState(0);
-  const [intervalId, setIntervalId] = useState(null);
-  const [isRunning, setIsRunning] = useState(false);
-  const [countdownHistory, setCountdownHistory] = useState([]);
-
-  useEffect(() => {
-    let timer = null;
-
-    if (isRunning) {
-      timer = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-        setRemainingTime((prevRemainingTime) => prevRemainingTime - 1);
-      }, 1000);
+class CountdownTimer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            minutes: '', // เปลี่ยนจาก seconds เป็น minutes
+            countdown: 0,
+            remainingTime: 0,
+            intervalId: null,
+            isRunning: false,
+            countdownHistory: [],
+        };
     }
 
-    if (countdown === 0) {
-      const startTime = new Date(Date.now() - (seconds * 1000)).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-      const endTime = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-      setCountdownHistory((prevHistory) => [
-        ...prevHistory,
-        { id: prevHistory.length + 1, startTime, endTime, totalTime: seconds },
-      ]);
-      setIsRunning(false);
+    componentDidUpdate(prevProps, prevState) {
+        const { isRunning, countdown, remainingTime, minutes } = this.state;
+
+        if (isRunning !== prevState.isRunning) {
+            if (isRunning) {
+                const timer = setInterval(() => {
+                    this.setState((prevState) => ({
+                        countdown: prevState.countdown - 1,
+                        remainingTime: prevState.remainingTime - 1,
+                    }));
+                }, 1000);
+                this.setState({ intervalId: timer });
+            } else {
+                clearInterval(this.state.intervalId);
+            }
+        }
+
+        if (countdown === 0 && countdown !== prevState.countdown) {
+            let countdownMinutes = minutes;
+            this.addToCountdownHistory(countdownMinutes);
+            this.setState({ isRunning: false });
+        }
     }
 
-    setIntervalId(timer);
-
-    return () => clearInterval(timer);
-  }, [isRunning, countdown, remainingTime, seconds]);
-
-  const handleInputChange = (e) => {
-    setSeconds(e.target.value);
-  };
-
-  const startCountdown = () => {
-    const countdownSeconds = parseInt(seconds, 10) || 0;
-    setCountdown(countdownSeconds);
-    setRemainingTime(countdownSeconds);
-    setIsRunning(true);
-  };
-
-  const stopCountdown = () => {
-    clearInterval(intervalId);
-    setIsRunning(false);
-  };
-
-  const resumeCountdown = () => {
-    setCountdown(remainingTime);
-    setIsRunning(true);
-  };
-
-  const resetCountdown = () => {
-    clearInterval(intervalId);
-    setSeconds('');
-    setCountdown(0);
-    setRemainingTime(0);
-    setIsRunning(false);
-    setCountdownHistory([]);
-  };
-
-  const formatTime = (timeInSeconds) => {
-    if (timeInSeconds === 0) {
-      return '00 hr 00 min 00 sec';
+    componentWillUnmount() {
+        clearInterval(this.state.intervalId);
     }
 
-    const hours = Math.floor(timeInSeconds / 3600);
-    const minutes = Math.floor((timeInSeconds % 3600) / 60);
-    const remainingSeconds = timeInSeconds % 60;
-    return `${hours.toString().padStart(2, '0')} hr ${minutes.toString().padStart(2, '0')} min ${remainingSeconds.toString().padStart(2, '0')} sec`;
-  };
+    handleInputChange = (e) => {
+        this.setState({ minutes: e.target.value }); // เปลี่ยนจาก seconds เป็น minutes
+    };
 
-  return (
-    <div className="countdown-container">
-      <input
-        type="number"
-        value={seconds}
-        onChange={handleInputChange}
-        placeholder="Enter seconds"
-        className="input-field"
-      />
-      <div className="button-container">
-        <button
-          onClick={startCountdown}
-          disabled={isRunning}
-          className="button start-button"
-        >
-          Start Countdown
-        </button>
-        <button
-          onClick={stopCountdown}
-          disabled={!isRunning}
-          className="button stop-button"
-        >
-          Stop Countdown
-        </button>
-        <button
-          onClick={resumeCountdown}
-          disabled={isRunning || remainingTime === 0}
-          className="button resume-button"
-        >
-          Resume Countdown
-        </button>
-        <button
-          onClick={resetCountdown}
-          disabled={!countdownHistory.length && !isRunning && !seconds}
-          className="button reset-button"
-        >
-          Reset
-        </button>
-      </div>
-      <div className="countdown-display">{formatTime(countdown)}</div>
-      {countdownHistory.length > 0 && (
-        <table className="history-table">
-          <thead>
-            <tr>
-              <th>ลำดับ</th>
-              <th>เวลาที่เริ่ม</th>
-              <th>เวลาที่จบ</th>
-              <th>เวลาที่ใช้นับถอยหลัง (วินาที)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {countdownHistory.map((history) => (
-              <tr key={history.id}>
-                <td>{history.id}</td>
-                <td>{history.startTime}</td>
-                <td>{history.endTime}</td>
-                <td>{history.totalTime}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
-};
+    startCountdown = () => {
+        const countdownMinutes = parseInt(this.state.minutes, 10) || 0;
+        const countdownSeconds = countdownMinutes * 60; // แปลงนาทีเป็นวินาที
+        this.setState({ countdown: countdownSeconds, remainingTime: countdownSeconds, isRunning: true });
+    };
 
-export default CountdownTimer;
+    stopCountdown = () => {
+        this.setState({ isRunning: false });
+    };
+
+    resumeCountdown = () => {
+        this.setState({ countdown: this.state.remainingTime, isRunning: true });
+    };
+
+    resetCountdown = () => {
+        clearInterval(this.state.intervalId);
+        this.setState({ minutes: '', countdown: 0, remainingTime: 0, isRunning: false, countdownHistory: [] });
+    };
+
+    addToCountdownHistory = (countdownMinutes) => {
+        const startTime = new Date(Date.now() - (countdownMinutes * 60 * 1000)).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+        const endTime = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+        this.setState((prevState) => ({
+            countdownHistory: [
+                ...prevState.countdownHistory,
+                { id: prevState.countdownHistory.length + 1, startTime, endTime, totalTime: countdownMinutes },
+            ],
+        }));
+    };
+
+    formatTime = (timeInSeconds) => {
+        if (timeInSeconds === 0) {
+            return '00 hr 00 min 00 sec';
+        }
+
+        const hours = Math.floor(timeInSeconds / 3600);
+        const minutes = Math.floor((timeInSeconds % 3600) / 60);
+        const remainingSeconds = timeInSeconds % 60;
+        return `  ${hours.toString().padStart(2, '0')} hr  ${minutes.toString().padStart(2, '0')} min  ${remainingSeconds.toString().padStart(2, '0')} sec`;
+    };
+
+    printCountdownHistory = () => {
+        const { countdownHistory } = this.state;
+        const historyRows = countdownHistory.map((history) => (
+            `<tr>
+        <td>${history.id}</td>
+        <td>${history.startTime}</td>
+        <td>${history.endTime}</td>
+        <td>${history.totalTime}</td>
+      </tr>`
+        ));
+
+        const historyTableContent = `
+      <table>
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>เวลาที่เริ่ม</th>
+            <th>เวลาที่จบ</th>
+            <th>เวลาที่ใช้นับถอยหลัง (นาที)</th>
+          </tr>
+        </thead>
+        <tbody>${historyRows.join('')}</tbody>
+      </table>
+    `;
+
+        const printWindow = window.open('', '', 'height=600,width=800');
+        printWindow.document.write(`
+      <html>
+        <head>
+          <title>ประวัติการนับถอยหลัง</title>
+          <style>
+            table {
+              border-collapse: collapse;
+              width: 100%;
+            }
+            th, td {
+              padding: 8px;
+              text-align: left;
+              border-bottom: 1px solid #ddd;
+            }
+          </style>
+        </head>
+        <body>
+          ${historyTableContent}
+          <script>
+            window.print();
+            window.close();
+          </script>
+        </body>
+      </html>
+    `);
+    };
+
+    render() {
+        const { minutes, countdown, isRunning, remainingTime, countdownHistory } = this.state;
+
+        return (
+            <div className="countdown-container">
+                <input
+                    type="number"
+                    value={minutes}
+                    onChange={this.handleInputChange}
+                    placeholder="Enter minutes"
+                    className="input-field"
+                />
+                <div className="button-container">
+                    <button onClick={this.startCountdown} disabled={isRunning} className="button start-button">
+                        Start Countdown
+                    </button>
+                    <button onClick={this.stopCountdown} disabled={!isRunning} className="button stop-button">
+                        Stop Countdown
+                    </button>
+                    <button onClick={this.resumeCountdown} disabled={isRunning || remainingTime === 0} className="button resume-button">
+                        Resume Countdown
+                    </button>
+                    <button
+                        onClick={this.resetCountdown}
+                        disabled={!countdownHistory.length && !isRunning && !minutes}
+                        className="button reset-button"
+                    >
+                        Reset
+                    </button>
+                    <button onClick={this.printCountdownHistory} disabled={!countdownHistory.length} className="button print-button">
+                        Print History
+                    </button>
+                </div>
+
+                {/* <div id="timer" className="countdown-display">{this.formatTime(countdown)}</div> */}
+                <div className="countdown-display">
+                    <div className="time-section">
+                        <span className="time-value">{Math.floor(countdown / 3600).toString().padStart(2, '0')}</span>
+                        <span className="time-label">Hours</span>
+                    </div>
+                    <div className="time-separator">:</div>
+                    <div className="time-section">
+                        <span className="time-value">{Math.floor((countdown % 3600) / 60).toString().padStart(2, '0')}</span>
+                        <span className="time-label">Minutes</span>
+                    </div>
+                    <div className="time-separator">:</div>
+                    <div className="time-section">
+                        <span className="time-value">{(countdown % 60).toString().padStart(2, '0')}</span>
+                        <span className="time-label">Seconds</span>
+                    </div>
+                </div>
+                {countdownHistory.length > 0 && (
+                    <table className="history-table">
+                        <thead>
+                            <tr>
+                                <th>ลำดับ</th>
+                                <th>เวลาที่เริ่ม</th>
+                                <th>เวลาที่จบ</th>
+                                <th>เวลาที่ใช้นับถอยหลัง (นาที)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {countdownHistory.map((history) => (
+                                <tr key={history.id}>
+                                    <td>{history.id}</td>
+                                    <td>{history.startTime}</td>
+                                    <td>{history.endTime}</td>
+                                    <td>{history.totalTime}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+        );
+    }
+}
+
+export default CountdownTimer
