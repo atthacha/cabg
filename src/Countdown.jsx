@@ -14,8 +14,32 @@ class CountdownTimer extends React.Component {
         };
     }
 
+    // componentDidUpdate(prevProps, prevState) {
+    //     const { isRunning, countdown, remainingTime, minutes } = this.state;
+
+    //     if (isRunning !== prevState.isRunning) {
+    //         if (isRunning) {
+    //             const timer = setInterval(() => {
+    //                 this.setState((prevState) => ({
+    //                     countdown: prevState.countdown - 1,
+    //                     remainingTime: prevState.remainingTime - 1,
+    //                 }));
+    //             }, 1000);
+    //             this.setState({ intervalId: timer });
+    //         } else {
+    //             clearInterval(this.state.intervalId);
+    //         }
+    //     }
+
+    //     if (countdown === 0 && countdown !== prevState.countdown) {
+    //         let countdownMinutes = minutes;
+    //         this.addToCountdownHistory(countdownMinutes);
+    //         this.setState({ isRunning: false });
+    //     }
+    // }
+
     componentDidUpdate(prevProps, prevState) {
-        const { isRunning, countdown, remainingTime, minutes } = this.state;
+        const { isRunning, countdown, minutes } = this.state;
 
         if (isRunning !== prevState.isRunning) {
             if (isRunning) {
@@ -32,8 +56,7 @@ class CountdownTimer extends React.Component {
         }
 
         if (countdown === 0 && countdown !== prevState.countdown) {
-            let countdownMinutes = minutes;
-            this.addToCountdownHistory(countdownMinutes);
+            this.addToCountdownHistory(parseInt(minutes));
             this.setState({ isRunning: false });
         }
     }
@@ -46,11 +69,16 @@ class CountdownTimer extends React.Component {
         this.setState({ minutes: e.target.value }); // เปลี่ยนจาก seconds เป็น minutes
     };
 
+    // startCountdown = () => {
+    //     const countdownMinutes = parseInt(this.state.minutes, 10) || 0;
+    //     const countdownSeconds = countdownMinutes * 60; // แปลงนาทีเป็นวินาที
+    //     this.setState({ countdown: countdownSeconds, remainingTime: countdownSeconds, isRunning: true });
+    // };
     startCountdown = () => {
         const countdownMinutes = parseInt(this.state.minutes, 10) || 0;
-        const countdownSeconds = countdownMinutes * 60; // แปลงนาทีเป็นวินาที
+        const countdownSeconds = countdownMinutes * 60;
         this.setState({ countdown: countdownSeconds, remainingTime: countdownSeconds, isRunning: true });
-    };
+      };
 
     stopCountdown = () => {
         this.setState({ isRunning: false });
@@ -65,16 +93,27 @@ class CountdownTimer extends React.Component {
         this.setState({ minutes: '', countdown: 0, remainingTime: 0, isRunning: false, countdownHistory: [] });
     };
 
+    // addToCountdownHistory = (countdownMinutes) => {
+    //     const startTime = new Date(Date.now() - (countdownMinutes * 60 * 1000)).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+    //     const endTime = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+    //     this.setState((prevState) => ({
+    //         countdownHistory: [
+    //             ...prevState.countdownHistory,
+    //             { id: prevState.countdownHistory.length + 1, startTime, endTime, totalTime: countdownMinutes },
+    //         ],
+    //     }));
+    // };
+
     addToCountdownHistory = (countdownMinutes) => {
         const startTime = new Date(Date.now() - (countdownMinutes * 60 * 1000)).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
         const endTime = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
         this.setState((prevState) => ({
-            countdownHistory: [
-                ...prevState.countdownHistory,
-                { id: prevState.countdownHistory.length + 1, startTime, endTime, totalTime: countdownMinutes },
-            ],
+          countdownHistory: [
+            ...prevState.countdownHistory,
+            { id: prevState.countdownHistory.length + 1, startTime, endTime, totalTime: countdownMinutes },
+          ],
         }));
-    };
+      };
 
     formatTime = (timeInSeconds) => {
         if (timeInSeconds === 0) {
@@ -140,9 +179,23 @@ class CountdownTimer extends React.Component {
     `);
     };
 
+    // addOneMinute = () => {
+    //     this.setState((prevState) => ({
+    //         countdown: prevState.countdown + 60,
+    //         remainingTime: prevState.remainingTime + 60
+    //     }));
+    // };
+
+    addOneMinute = () => {
+        this.setState((prevState) => ({
+          countdown: prevState.countdown + 60,
+          remainingTime: prevState.remainingTime + 60,
+          minutes: String(parseInt(prevState.minutes) + 1)
+        }));
+      };
     render() {
         const { minutes, countdown, isRunning, remainingTime, countdownHistory } = this.state;
-
+        const isLastTenSeconds = countdown <= 10 && countdown > 0;
         return (
             <div className="countdown-container">
                 <input
@@ -154,13 +207,13 @@ class CountdownTimer extends React.Component {
                 />
                 <div className="button-container">
                     <button onClick={this.startCountdown} disabled={isRunning} className="button start-button">
-                        Start Countdown
+                        Start
                     </button>
                     <button onClick={this.stopCountdown} disabled={!isRunning} className="button stop-button">
-                        Stop Countdown
+                        Stop
                     </button>
                     <button onClick={this.resumeCountdown} disabled={isRunning || remainingTime === 0} className="button resume-button">
-                        Resume Countdown
+                        Resume
                     </button>
                     <button
                         onClick={this.resetCountdown}
@@ -170,12 +223,12 @@ class CountdownTimer extends React.Component {
                         Reset
                     </button>
                     <button onClick={this.printCountdownHistory} disabled={!countdownHistory.length} className="button print-button">
-                        Print History
+                        Print
                     </button>
                 </div>
 
                 {/* <div id="timer" className="countdown-display">{this.formatTime(countdown)}</div> */}
-                <div className="countdown-display">
+                <div className={`countdown-display ${isLastTenSeconds ? 'flashing' : ''}`}>
                     <div className="time-section">
                         <span className="time-value">{Math.floor(countdown / 3600).toString().padStart(2, '0')}</span>
                         <span className="time-label">Hours</span>
@@ -190,6 +243,11 @@ class CountdownTimer extends React.Component {
                         <span className="time-value">{(countdown % 60).toString().padStart(2, '0')}</span>
                         <span className="time-label">Seconds</span>
                     </div>
+                </div>
+                <div className="button-container">
+                    <button onClick={this.addOneMinute} disabled={!isRunning} className="button add-minute-button">
+                        +1 Min
+                    </button>
                 </div>
                 {countdownHistory.length > 0 && (
                     <table className="history-table">
